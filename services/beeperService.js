@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { v4 as uuidv4 } from 'uuid';
 import { Status } from '../types/type.js';
-import { insertBeeperToJson, readFromJsonFile } from '../DAL/jsonBeepers.js';
+import { insertBeeperToJson, readFromJsonFile, writeUpdatedBeepersToJson } from '../DAL/jsonBeepers.js';
 export function makeBeeper(name) {
     return __awaiter(this, void 0, void 0, function* () {
         const newBeeper = {
@@ -25,7 +25,24 @@ export function makeBeeper(name) {
 export function getSpecificBeeper(id) {
     return __awaiter(this, void 0, void 0, function* () {
         const beepers = yield readFromJsonFile();
+        if (!beepers) {
+            throw new Error("there isn't any beepers in the jsom file");
+        }
         const beeperIndex = beepers.findIndex((b) => b.id === id);
         return beepers[beeperIndex] ? beepers[beeperIndex] : null;
+    });
+}
+export function deleteSpecificBeeper(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const myBeepers = yield readFromJsonFile();
+        if (!myBeepers) {
+            throw new Error("there isn't any beepers in the jsom file");
+        }
+        const beeperIndex = myBeepers.findIndex((b) => b.id === id);
+        if (beeperIndex < 0) {
+            throw new Error("beeper with that id didn't found so it can't be deleted");
+        }
+        myBeepers.splice(beeperIndex, 1);
+        yield writeUpdatedBeepersToJson(myBeepers);
     });
 }

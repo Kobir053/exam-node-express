@@ -43,6 +43,10 @@ export async function updateBeeperInJson (beeper: Beeper) : Promise<void> {
     }
 }
 
+export async function writeUpdatedBeepersToJson (beepers: Beeper[] ) {
+    await jsonfile.writeFile(DB_PATH, beepers);
+}
+
 export async function ensureDatabaseExist () {
     if(!fs.readFileSync(DB_PATH)){
         await jsonfile.writeFile(DB_PATH, []);

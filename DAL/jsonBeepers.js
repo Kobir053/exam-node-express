@@ -47,6 +47,11 @@ export function updateBeeperInJson(beeper) {
         }
     });
 }
+export function writeUpdatedBeepersToJson(beepers) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield jsonfile.writeFile(DB_PATH, beepers);
+    });
+}
 export function ensureDatabaseExist() {
     return __awaiter(this, void 0, void 0, function* () {
         if (!fs.readFileSync(DB_PATH)) {

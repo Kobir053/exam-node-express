@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { getSpecificBeeper, makeBeeper } from '../services/beeperService.js';
+import { deleteSpecificBeeper, getSpecificBeeper, makeBeeper } from '../services/beeperService.js';
 import { readFromJsonFile } from '../DAL/jsonBeepers.js';
 export function createBeeper(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -49,6 +49,26 @@ export function getBeeperById(req, res) {
         }
         catch (error) {
             res.status(500).json({ message: "couldn't get beeper by id due to error: " + error.message });
+        }
+    });
+}
+export function deleteBeeperById(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!req.params.id) {
+                res.status(400).json({ message: "please enter id in params of url" });
+                return;
+            }
+            const myBeeper = yield getSpecificBeeper(req.params.id);
+            if (!myBeeper) {
+                res.status(404).json({ message: "didn't found a beeper with this id" });
+                return;
+            }
+            yield deleteSpecificBeeper(req.params.id);
+            res.status(200).json({ message: "deleted successfully" });
+        }
+        catch (error) {
+            res.status(500).json({ message: error.message });
         }
     });
 }

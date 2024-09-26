@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { Beeper } from '../types/type.js';
-import { getSpecificBeeper, makeBeeper } from '../services/beeperService.js';
+import { Beeper, Status } from '../types/type.js';
+import { deleteSpecificBeeper, getSpecificBeeper, makeBeeper } from '../services/beeperService.js';
 import { readFromJsonFile } from '../DAL/jsonBeepers.js';
 
 export async function createBeeper (req: Request, res: Response) : Promise<void> {
@@ -39,10 +39,29 @@ export async function getBeeperById (req: Request, res: Response) {
             res.status(404).json({message: "didn't found a beeper with this id"});
             return;
         }
-
+        
         res.status(200).json({myBeeper: myBeeper});
     } 
     catch (error: any) {
         res.status(500).json({message: "couldn't get beeper by id due to error: " + error.message});
+    }
+}
+
+export async function deleteBeeperById (req: Request, res: Response) {
+    try {
+        if(!req.params.id){
+            res.status(400).json({message: "please enter id in params of url"});
+            return;
+        }
+        const myBeeper = await getSpecificBeeper(req.params.id);
+        if(!myBeeper){
+            res.status(404).json({message: "didn't found a beeper with this id"});
+            return;
+        }
+        await deleteSpecificBeeper(req.params.id);
+        res.status(200).json({message: "deleted successfully"});
+    } 
+    catch (error: any) {
+        res.status(500).json({message: error.message});
     }
 }
