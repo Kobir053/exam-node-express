@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { makeBeeper } from '../services/beeperService.js';
+import { getSpecificBeeper, makeBeeper } from '../services/beeperService.js';
 import { readFromJsonFile } from '../DAL/jsonBeepers.js';
 export function createBeeper(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -29,12 +29,26 @@ export function getAllBeepers(req, res) {
             const beepers = yield readFromJsonFile();
             if (!beepers) {
                 res.status(404).json({ message: "didn't found any beepers" });
-                return;
             }
             res.status(200).json({ beepers: beepers });
         }
         catch (error) {
             res.status(500).json({ message: "couldn't get all beepers due to error: " + error.message });
+        }
+    });
+}
+export function getBeeperById(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const myBeeper = yield getSpecificBeeper(req.params.id);
+            if (!myBeeper) {
+                res.status(404).json({ message: "didn't found a beeper with this id" });
+                return;
+            }
+            res.status(200).json({ myBeeper: myBeeper });
+        }
+        catch (error) {
+            res.status(500).json({ message: "couldn't get beeper by id due to error: " + error.message });
         }
     });
 }

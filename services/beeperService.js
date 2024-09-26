@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { v4 as uuidv4 } from 'uuid';
 import { Status } from '../types/type.js';
-import { insertBeeperToJson } from '../DAL/jsonBeepers.js';
+import { insertBeeperToJson, readFromJsonFile } from '../DAL/jsonBeepers.js';
 export function makeBeeper(name) {
     return __awaiter(this, void 0, void 0, function* () {
         const newBeeper = {
@@ -20,5 +20,12 @@ export function makeBeeper(name) {
         };
         yield insertBeeperToJson(newBeeper);
         return newBeeper;
+    });
+}
+export function getSpecificBeeper(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const beepers = yield readFromJsonFile();
+        const beeperIndex = beepers.findIndex((b) => b.id === id);
+        return beepers[beeperIndex] ? beepers[beeperIndex] : null;
     });
 }

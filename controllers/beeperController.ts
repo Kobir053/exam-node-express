@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Beeper } from '../types/type.js';
-import { makeBeeper } from '../services/beeperService.js';
+import { getSpecificBeeper, makeBeeper } from '../services/beeperService.js';
 import { readFromJsonFile } from '../DAL/jsonBeepers.js';
 
 export async function createBeeper (req: Request, res: Response) : Promise<void> {
@@ -22,12 +22,27 @@ export async function getAllBeepers (req: Request, res: Response) {
         const beepers: Beeper[] = await readFromJsonFile();
         if(!beepers){
             res.status(404).json({message: "didn't found any beepers"});
-            return;
         }
 
         res.status(200).json({beepers: beepers});
     } 
     catch (error: any) {
         res.status(500).json({message: "couldn't get all beepers due to error: " + error.message});
+    }
+}
+
+export async function getBeeperById (req: Request, res: Response) {
+    try {
+
+        const myBeeper = await getSpecificBeeper(req.params.id);
+        if(!myBeeper){
+            res.status(404).json({message: "didn't found a beeper with this id"});
+            return;
+        }
+
+        res.status(200).json({myBeeper: myBeeper});
+    } 
+    catch (error: any) {
+        res.status(500).json({message: "couldn't get beeper by id due to error: " + error.message});
     }
 }
