@@ -9,7 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import { v4 as uuidv4 } from 'uuid';
 import { Status } from '../types/type.js';
-import { insertBeeperToJson, readFromJsonFile, writeUpdatedBeepersToJson } from '../DAL/jsonBeepers.js';
+import { insertBeeperToJson, readFromJsonFile, updateBeeperInJson, writeUpdatedBeepersToJson } from '../DAL/jsonBeepers.js';
+import { coordinates } from '../constantVariables/constants.js';
+let timeoutIdList = [];
 export function makeBeeper(name) {
     return __awaiter(this, void 0, void 0, function* () {
         const newBeeper = {
@@ -42,6 +44,11 @@ export function deleteSpecificBeeper(id) {
         if (beeperIndex < 0) {
             throw new Error("beeper with that id didn't found so it can't be deleted");
         }
+        if (myBeepers[beeperIndex].status == Status.deployed) {
+            const timeOutIndex = timeoutIdList.findIndex((val) => val.beeperId === myBeepers[beeperIndex].id);
+            clearTimeout(timeoutIdList[timeOutIndex].timeOutId);
+            timeoutIdList.splice(timeOutIndex, 1);
+        }
         myBeepers.splice(beeperIndex, 1);
         yield writeUpdatedBeepersToJson(myBeepers);
     });
@@ -57,4 +64,47 @@ export function searchBeepersByStatus(status) {
         });
         return filteredBeepers;
     });
+}
+export function handleUpdateStatus(id, lon, lat) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const beeper = yield getSpecificBeeper(id);
+        if (!beeper) {
+            throw new Error("there isn't beeper with this id");
+        }
+        if (beeper.status >= Status.deployed) {
+            throw new Error("the beeper was already deployed");
+        }
+        if (beeper.status == Status.shipped) {
+            if (!isValidLocation(lon, lat)) {
+                throw new Error("you need to insert valid coordinates");
+            }
+            beeper.status += 1;
+            beeper.longitude = lon;
+            beeper.latitude = lat;
+            yield updateBeeperInJson(beeper);
+            deployBeeper(beeper, lat, lon);
+        }
+        else {
+            beeper.status += 1;
+            yield updateBeeperInJson(beeper);
+        }
+    });
+}
+function deployBeeper(beeper, lat, lon) {
+    const timeOutId = setTimeout(() => __awaiter(this, void 0, void 0, function* () {
+        beeper.status += 1;
+        beeper.detonated_at = new Date();
+        yield updateBeeperInJson(beeper);
+    }), 10000);
+    timeoutIdList.push({ beeperId: beeper.id, timeOutId: timeOutId });
+}
+function isValidLocation(lon, lat) {
+    if (!lon || !lat)
+        return false;
+    const locationIndex = coordinates.findIndex((val) => {
+        return val.lat == lat && val.lon == lon;
+    });
+    if (locationIndex < 0)
+        return false;
+    return true;
 }

@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Status } from '../types/type.js';
-import { deleteSpecificBeeper, getSpecificBeeper, makeBeeper, searchBeepersByStatus } from '../services/beeperService.js';
+import { deleteSpecificBeeper, getSpecificBeeper, handleUpdateStatus, makeBeeper, searchBeepersByStatus } from '../services/beeperService.js';
 import { readFromJsonFile } from '../DAL/jsonBeepers.js';
 export function createBeeper(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -93,6 +93,24 @@ export function getBeepersByStatus(req, res) {
         }
         catch (error) {
             res.status(500).json({ message: "couldn't get beepers by status due to error: " + error.message });
+        }
+    });
+}
+export function updateStatusById(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!req.params.id) {
+                res.status(400).json({ message: "please enter id in the url params" });
+                return;
+            }
+            const longitude = req.body.longitude;
+            const latitude = req.body.latitude;
+            console.log(longitude, latitude);
+            yield handleUpdateStatus(req.params.id, longitude, latitude);
+            res.status(200).json({ message: "status updated successfully" });
+        }
+        catch (error) {
+            res.status(500).json({ message: "could not update the status for the beeper due to error: " + error.message });
         }
     });
 }

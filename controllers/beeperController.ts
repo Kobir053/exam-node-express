@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { Beeper, Status } from '../types/type.js';
-import { deleteSpecificBeeper, getSpecificBeeper, makeBeeper, searchBeepersByStatus } from '../services/beeperService.js';
+import { deleteSpecificBeeper, getSpecificBeeper, handleUpdateStatus, makeBeeper, searchBeepersByStatus } from '../services/beeperService.js';
 import { readFromJsonFile } from '../DAL/jsonBeepers.js';
 
 export async function createBeeper (req: Request, res: Response) : Promise<void> {
@@ -86,5 +86,23 @@ export async function getBeepersByStatus(req: Request, res: Response) {
     } 
     catch (error: any) {
         res.status(500).json({message: "couldn't get beepers by status due to error: " + error.message});
+    }
+}
+
+export async function updateStatusById (req: Request, res: Response) {
+    try {
+        if(!req.params.id){
+            res.status(400).json({message: "please enter id in the url params"});
+            return;
+        }
+        const longitude: number | null = req.body.longitude;
+        const latitude: number | null = req.body.latitude;
+        console.log(longitude, latitude);
+        
+        await handleUpdateStatus(req.params.id, longitude, latitude);
+        res.status(200).json({message: "status updated successfully"});
+    } 
+    catch (error: any) {
+        res.status(500).json({message: "could not update the status for the beeper due to error: " + error.message});
     }
 }
