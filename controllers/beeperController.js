@@ -80,6 +80,7 @@ export function getBeepersByStatus(req, res) {
                 res.status(400).json({ message: "please enter a status in the params of url" });
                 return;
             }
+            // checks if the status that sent in the params is valid
             if (!Object.keys(Status).includes(req.params.status)) {
                 res.status(400).json({ message: "This status is not valid" });
                 return;
@@ -105,7 +106,6 @@ export function updateStatusById(req, res) {
             }
             const longitude = req.body.longitude;
             const latitude = req.body.latitude;
-            console.log(longitude, latitude);
             yield handleUpdateStatus(req.params.id, longitude, latitude);
             res.status(200).json({ message: "status updated successfully" });
         }

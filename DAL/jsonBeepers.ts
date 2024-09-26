@@ -3,6 +3,7 @@ import fs from 'fs';
 import { Beeper } from '../types/type.js';
 const DB_PATH = './data/db.json'; 
 
+// gets the array of beepers and insert to it the new beeper
 export async function insertBeeperToJson (beeper: Beeper) : Promise<void> {
     try {
 
@@ -16,11 +17,13 @@ export async function insertBeeperToJson (beeper: Beeper) : Promise<void> {
     }
 }
 
+// gets the array of beepers and return it
 export async function readFromJsonFile () : Promise<Beeper[]> {
     const beepers: Beeper[] = await jsonfile.readFile(DB_PATH);
     return beepers;
 }
 
+// updates specific beeper in the json file
 export async function updateBeeperInJson (beeper: Beeper) : Promise<void> {
     try {
 
@@ -43,10 +46,12 @@ export async function updateBeeperInJson (beeper: Beeper) : Promise<void> {
     }
 }
 
+// updates the array of beepers with given beepers array 
 export async function writeUpdatedBeepersToJson (beepers: Beeper[] ) {
     await jsonfile.writeFile(DB_PATH, beepers);
 }
 
+// make sure we'll have that json file with array
 export async function ensureDatabaseExist () {
     if(!fs.readFileSync(DB_PATH)){
         await jsonfile.writeFile(DB_PATH, []);

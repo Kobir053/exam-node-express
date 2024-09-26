@@ -53,11 +53,13 @@ export async function deleteBeeperById (req: Request, res: Response) {
             res.status(400).json({message: "please enter id in params of url"});
             return;
         }
+
         const myBeeper = await getSpecificBeeper(req.params.id);
         if(!myBeeper){
             res.status(404).json({message: "didn't found a beeper with this id"});
             return;
         }
+
         await deleteSpecificBeeper(req.params.id);
         res.status(200).json({message: "deleted successfully"});
     } 
@@ -72,10 +74,13 @@ export async function getBeepersByStatus(req: Request, res: Response) {
             res.status(400).json({message: "please enter a status in the params of url"});
             return;
         }
+
+        // checks if the status that sent in the params is valid
         if(!Object.keys(Status).includes(req.params.status)){
             res.status(400).json({message: "This status is not valid"});
             return;
         }
+
         const specificBeepers = await searchBeepersByStatus(req.params.status);
         if(specificBeepers.length == 0){
             res.status(404).json({message: "didn't found any beepers with that status"});
@@ -95,10 +100,9 @@ export async function updateStatusById (req: Request, res: Response) {
             res.status(400).json({message: "please enter id in the url params"});
             return;
         }
+
         const longitude: number | null = req.body.longitude;
         const latitude: number | null = req.body.latitude;
-        console.log(longitude, latitude);
-        
         await handleUpdateStatus(req.params.id, longitude, latitude);
         res.status(200).json({message: "status updated successfully"});
     } 

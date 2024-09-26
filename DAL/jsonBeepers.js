@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import jsonfile from 'jsonfile';
 import fs from 'fs';
 const DB_PATH = './data/db.json';
+// gets the array of beepers and insert to it the new beeper
 export function insertBeeperToJson(beeper) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -22,12 +23,14 @@ export function insertBeeperToJson(beeper) {
         }
     });
 }
+// gets the array of beepers and return it
 export function readFromJsonFile() {
     return __awaiter(this, void 0, void 0, function* () {
         const beepers = yield jsonfile.readFile(DB_PATH);
         return beepers;
     });
 }
+// updates specific beeper in the json file
 export function updateBeeperInJson(beeper) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -47,11 +50,13 @@ export function updateBeeperInJson(beeper) {
         }
     });
 }
+// updates the array of beepers with given beepers array 
 export function writeUpdatedBeepersToJson(beepers) {
     return __awaiter(this, void 0, void 0, function* () {
         yield jsonfile.writeFile(DB_PATH, beepers);
     });
 }
+// make sure we'll have that json file with array
 export function ensureDatabaseExist() {
     return __awaiter(this, void 0, void 0, function* () {
         if (!fs.readFileSync(DB_PATH)) {
