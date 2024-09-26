@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { makeBeeper } from '../services/beeperService.js';
+import { readFromJsonFile } from '../DAL/jsonBeepers.js';
 export function createBeeper(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -19,6 +20,21 @@ export function createBeeper(req, res) {
         }
         catch (error) {
             res.status(500).json({ message: "could not create a beeper due to the error: " + error.message });
+        }
+    });
+}
+export function getAllBeepers(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const beepers = yield readFromJsonFile();
+            if (!beepers) {
+                res.status(404).json({ message: "didn't found any beepers" });
+                return;
+            }
+            res.status(200).json({ beepers: beepers });
+        }
+        catch (error) {
+            res.status(500).json({ message: "couldn't get all beepers due to error: " + error.message });
         }
     });
 }
