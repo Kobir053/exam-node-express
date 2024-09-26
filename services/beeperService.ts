@@ -37,3 +37,16 @@ export async function deleteSpecificBeeper(id: string) {
     myBeepers.splice(beeperIndex, 1);
     await writeUpdatedBeepersToJson(myBeepers);
 }
+
+export async function searchBeepersByStatus(status: string) : Promise<Beeper[]> {
+    const myBeepers: Beeper[] = await readFromJsonFile();
+    if(!myBeepers){
+        throw new Error("there isn't any beepers in the json file at all");
+    }
+
+    const filteredBeepers = myBeepers.filter((beeper: Beeper) => {
+        return Status[beeper.status] === status;
+    });
+
+    return filteredBeepers;
+}

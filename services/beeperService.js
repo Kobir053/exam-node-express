@@ -46,3 +46,15 @@ export function deleteSpecificBeeper(id) {
         yield writeUpdatedBeepersToJson(myBeepers);
     });
 }
+export function searchBeepersByStatus(status) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const myBeepers = yield readFromJsonFile();
+        if (!myBeepers) {
+            throw new Error("there isn't any beepers in the json file at all");
+        }
+        const filteredBeepers = myBeepers.filter((beeper) => {
+            return Status[beeper.status] === status;
+        });
+        return filteredBeepers;
+    });
+}

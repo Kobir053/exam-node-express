@@ -7,7 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { deleteSpecificBeeper, getSpecificBeeper, makeBeeper } from '../services/beeperService.js';
+import { Status } from '../types/type.js';
+import { deleteSpecificBeeper, getSpecificBeeper, makeBeeper, searchBeepersByStatus } from '../services/beeperService.js';
 import { readFromJsonFile } from '../DAL/jsonBeepers.js';
 export function createBeeper(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -69,6 +70,29 @@ export function deleteBeeperById(req, res) {
         }
         catch (error) {
             res.status(500).json({ message: error.message });
+        }
+    });
+}
+export function getBeepersByStatus(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (!req.params.status) {
+                res.status(400).json({ message: "please enter a status in the params of url" });
+                return;
+            }
+            if (!Object.keys(Status).includes(req.params.status)) {
+                res.status(400).json({ message: "This status is not valid" });
+                return;
+            }
+            const specificBeepers = yield searchBeepersByStatus(req.params.status);
+            if (specificBeepers.length == 0) {
+                res.status(404).json({ message: "didn't found any beepers with that status" });
+                return;
+            }
+            res.status(200).json({ beepersByStatus: specificBeepers });
+        }
+        catch (error) {
+            res.status(500).json({ message: "couldn't get beepers by status due to error: " + error.message });
         }
     });
 }
